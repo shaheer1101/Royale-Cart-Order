@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Royale Cart </title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script type="text/javascript">
+   (function(){
+      emailjs.init("dSgyIMr8ioObmYhZO");
+   })();
+</script>
+
+<style>
+:root {
+  --primary: #00f2ff;
+  --secondary: #7000ff;
+  --success: #00ff88;
+  --error: #ff3b3b;
+  --bg-dark: #050505;
+  --glass: rgba(20, 20, 25, 0.7); /* Thoda dark background taake blur kam karna pade */
+  --border: rgba(255, 255, 255, 0.1);
+  --text-main: #ffffff;
+  --text-muted: #8b9bb4;
+}
+
+* { box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  /* Optimized Background: Fixed hata diya taake scroll smooth ho */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(112, 0, 255, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.2) 0%, transparent 40%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Background Grid - Static now for performance */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --- OPTIMIZED CARD --- */
+.card {
+  width: 100%;
+  max-width: 500px;
+  padding: 3px; /* Space for the neon border */
+  border-radius: 24px;
+  background: transparent; /* Background wrapper handle karega */
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 40px 80px -15px rgba(0,0,0,0.8);
+  overflow: hidden; /* Border animation bahar na jaye */
+}
+
+/* THE NEW GPU ACCELERATED NEON BORDER */
+/* Ye element ghoomta hai piche */
+.card::before {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: conic-gradient(
+    transparent, 
+    var(--primary), 
+    transparent 30%
+  );
+  animation: rotateBorder 4s linear infinite;
+  /* Ye browser ko batata hai k GPU use karo */
+  will-change: transform; 
+}
+
+/* Ye element doosri side se ghoomta hai */
+.card::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: conic-gradient(
+    transparent, 
+    var(--secondary), 
+    transparent 30%
+  );
+  animation: rotateBorder 4s linear infinite reverse; /* Ulta ghoomega */
+  will-change: transform;
+}
+
+@keyframes rotateBorder {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Asli content container - Iske upar form ayega */
+.card-content {
+  background: var(--bg-dark); /* Fallback */
+  background: rgba(10, 10, 15, 0.85); /* Kam transparency = Kam Lag */
+  backdrop-filter: blur(15px); /* Blur radius kam kiya 40 se 15 */
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 22px;
+  padding: 30px;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  width: 100%;
+}
+
+.header { text-align: center; margin-bottom: 25px; }
+
+.logo-img {
+  width: 80px; 
+  height: auto;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5));
+}
+
+h1 {
+  font-size: 24px; margin: 0;
+  background: linear-gradient(to right, #fff, #b4b4b4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800; letter-spacing: -0.5px;
+}
+
+.field { margin-bottom: 18px; }
+
+input, textarea {
+  width: 100%; padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03); 
+  border: 1px solid var(--border);
+  border-radius: 14px; color: #fff; font-size: 14px; outline: none;
+  transition: border-color 0.3s ease;
+}
+textarea { height: 90px; resize: none; }
+input:focus, textarea:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.items-box {
+  background: rgba(255,255,255,0.02); border-radius: 16px;
+  padding: 15px; margin: 20px 0; border: 1px solid var(--border);
+}
+.items-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; color: var(--text-main); font-weight: 700;
+  font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+}
+.add-btn {
+  background: rgba(0, 242, 255, 0.1); border: 1px solid var(--primary);
+  color: var(--primary); padding: 5px 12px; border-radius: 8px;
+  font-weight: 600; cursor: pointer; font-size: 11px;
+}
+.item-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.item-row .p-qty { max-width: 70px; text-align: center; }
+.remove-btn {
+  width: 40px; background: rgba(255, 59, 59, 0.1); border: 1px solid #ff3b3b;
+  color: #ff3b3b; border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+
+.whatsapp { display: flex; gap: 8px; }
+.prefix {
+  padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); color: var(--primary);
+  font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.hint {
+  font-size: 11px; color: var(--text-muted); margin-top: 6px;
+  text-align: right; opacity: 0.7;
+}
+
+button.submit {
+  width: 100%; margin-top: 15px; padding: 16px; border: none;
+  border-radius: 16px; background: linear-gradient(135deg, var(--primary), #0072ff);
+  color: #000; font-weight: 900; font-size: 16px; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 114, 255, 0.2);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+button.submit:active { transform: scale(0.98); }
+
+/* --- POPUP --- */
+.popup-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); /* No blur here for performance */
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; opacity: 0; pointer-events: none; transition: 0.2s;
+}
+.popup-overlay.active { opacity: 1; pointer-events: all; }
+.popup-box {
+  background: #111; border: 1px solid var(--border);
+  padding: 30px; border-radius: 20px; text-align: center;
+  max-width: 350px; width: 90%; transform: scale(0.9); transition: 0.2s;
+}
+.popup-overlay.active .popup-box { transform: scale(1); }
+.icon-box {
+  width: 60px; height: 60px; margin: 0 auto 15px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+}
+.success .icon-box { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 2px solid var(--success); }
+.error .icon-box { background: rgba(255, 59, 59, 0.1); color: var(--error); border: 2px solid var(--error); }
+.popup-title { font-size: 20px; font-weight: 800; margin: 0 0 10px; color: #fff; }
+.popup-msg { font-size: 13px; color: var(--text-muted); margin: 0 0 20px; line-height: 1.4; }
+.close-popup {
+  padding: 10px 25px; border: none; border-radius: 10px;
+  font-weight: 700; cursor: pointer; background: #fff; color: #000;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-content">
+    <div class="header">
+      <img src="logo.png" alt="Logo" class="logo-img">
+      
+      <h1>ORDER FORM</h1>
+    </div>
+
+    <form id="orderForm">
+      <div class="field">
+        <input type="text" id="u_name" placeholder="Full Name" required>
+      </div>
+      <div class="field">
+        <input type="text" id="u_city" placeholder="City" required>
+      </div>
+      <div class="field">
+        <textarea id="u_address" placeholder="Complete Delivery Address" required></textarea>
+      </div>
+
+      <div class="items-box">
+        <div class="items-header">
+          <span>Cart Items</span>
+          <button type="button" class="add-btn" onclick="addNewItem()">+ ADD</button>
+        </div>
+        <div id="itemsContainer">
+          <div class="item-row">
+            <input type="text" placeholder="Product Name" class="p-name" required>
+            <input type="number" placeholder="Qty" class="p-qty" min="1" required>
+            <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="whatsapp">
+          <div class="prefix">+92</div>
+          <input type="tel" id="u_phone" placeholder="300 *******" pattern="[0-9]{10}" required>
+        </div>
+        <div class="hint">Type 10 digits only (without first 0)</div>
+      </div>
+
+      <button class="submit" type="submit" id="submitBtn">CONFIRM ORDER</button>
+    </form>
+  </div>
+</div>
+
+<div class="popup-overlay" id="customPopup">
+  <div class="popup-box" id="popupContent">
+    <div class="icon-box" id="pIcon">✓</div>
+    <div class="popup-title" id="pTitle">Order Success</div>
+    <div class="popup-msg" id="pMsg">Your order has been placed successfully.</div>
+    <button class="close-popup" onclick="closePopup()">OK, Great</button>
+  </div>
+</div>
+
+<style>
+   .logo-img {
+  width: 100px !important;  
+  height: 100px !important;
+  object-fit: contain;
+  background: #ffffff; 
+    border-radius: 20%;   padding: 15px;
+  margin: 0 auto 20px auto; 
+  display: block;   
+  
+  box-shadow: 0 0 25px rgba(0, 242, 255, 0.4); 
+  border: 2px solid rgba(0, 242, 255, 0.1);
+}
+
+</style>
+
+<script>
+   // 1. Apni PUBLIC KEY yahan confirm karo
+   (function(){
+      emailjs.init("dSgyIMr8ioObmYhZO"); // <--- Ye Key Dashboard se match karo!
+   })();
+
+   // Popup Functions
+   function showPopup(type, title, message) {
+      const overlay = document.getElementById('customPopup');
+      const content = document.getElementById('popupContent');
+      const icon = document.getElementById('pIcon');
+      const t = document.getElementById('pTitle');
+      const m = document.getElementById('pMsg');
+      
+      content.className = 'popup-box ' + type;
+      if(type === 'success') {
+         icon.innerHTML = '✓';
+         t.innerText = title;
+      } else {
+         icon.innerHTML = '!';
+         t.innerText = title;
+      }
+      m.innerText = message;
+      overlay.classList.add('active');
+   }
+
+   function closePopup() {
+      document.getElementById('customPopup').classList.remove('active');
+   }
+
+   // Add/Remove Item Logic
+   function addNewItem(){
+      const container = document.getElementById('itemsContainer');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+         <input type="text" placeholder="Product Name" class="p-name" required>
+         <input type="number" placeholder="Qty" class="p-qty" min="1" required>
+         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+      `;
+      container.appendChild(row);
+   }
+
+   function removeItem(btn){
+      const rows = document.querySelectorAll('.item-row');
+      if(rows.length > 1) btn.parentElement.remove();
+   }
+
+   // FORM SUBMIT HANDLER
+   document.getElementById("orderForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      const originalText = btn.innerText;
+      
+      let valid = true;
+      const u_name = document.getElementById('u_name').value;
+      const u_city = document.getElementById('u_city').value;
+      const u_address = document.getElementById('u_address').value;
+      const u_phone = document.getElementById('u_phone').value;
+
+      // --- TEXT STRING LOGIC (NO ARRAYS) ---
+      let orderDetailsString = ""; 
+
+      document.querySelectorAll(".item-row").forEach((row, i) => {
+         const pName = row.querySelector(".p-name").value.trim();
+         const pQty = row.querySelector(".p-qty").value;
+         
+         if(!pName || !pQty) valid = false;
+         
+         // Har item ko new line (\n) ke sath jod rahe hain
+         orderDetailsString += `${i+1}. ${pName} (Qty: ${pQty})\n`;
+      });
+
+      if(!valid){
+         showPopup('error', 'Incomplete Data', 'Please fill all fields.');
+         return;
+      }
+      
+      // Console mein print kar rahe hain taake pata chale kya bheja ja raha hai
+      console.log("Sending Data:", orderDetailsString);
+
+      const templateParams = {
+         user_name: u_name,
+         user_city: u_city,
+         user_address: u_address,
+         user_phone: "PK +92 " + u_phone,
+         order_items: orderDetailsString // Simple String bhej rahe hain
+      };
+      
+      btn.innerText = "SENDING...";
+      btn.disabled = true;
+      
+      // 2. SERVICE ID aur TEMPLATE ID yahan confirm karo
+      emailjs.send("service_j442826", "template_ysgv0ws", templateParams)
+         .then(() => {
+            showPopup('success', 'Order Placed!', 'Check your email inbox.');
+            btn.innerText = "SENT ✓";
+            document.getElementById("orderForm").reset();
+            setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
+         })
+         .catch((error) => {
+            // ASLI ERROR YAHAN DIKHEGA
+            console.error("EMAIL JS ERROR:", error);
+            alert("Error: " + JSON.stringify(error)); // Mobile pe alert aayega
+            
+            showPopup('error', 'Failed', 'Check Console/Alert for details.');
+            btn.innerText = originalText;
+            btn.disabled = false;
+         });
+   });
+</script>
+</body>
+  </html>
+  
