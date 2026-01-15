@@ -277,7 +277,7 @@ button.submit:active { transform: scale(0.98); }
     <div class="icon-box" id="pIcon">✓</div>
     <div class="popup-title" id="pTitle">Order Success</div>
     <div class="popup-msg" id="pMsg">Your order has been placed successfully.</div>
-    <button class="close-popup" onclick="closePopup()">OK, Great</button>
+    <button class="close-popup" onclick="closePopup()">Close</button>
   </div>
 </div>
 
@@ -392,7 +392,7 @@ button.submit:active { transform: scale(0.98); }
       // 2. SERVICE ID aur TEMPLATE ID yahan confirm karo
       emailjs.send("service_j442826", "template_ysgv0ws", templateParams)
          .then(() => {
-            showPopup('success', 'Order Placed!', 'Check your email inbox.');
+            showPopup('success', 'Order Placed!', 'We appreciate your trust in us.');
             btn.innerText = "SENT ✓";
             document.getElementById("orderForm").reset();
             setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
